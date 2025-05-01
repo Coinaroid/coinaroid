@@ -4,6 +4,7 @@ import frameSdk from '@farcaster/frame-sdk'
 import { usePrivy } from '@privy-io/react-auth'
 import { useLoginToFrame } from '@privy-io/react-auth/farcaster'
 import { useEffect } from 'react'
+import PhotoUploadForm from '../PhotoUploadForm'
 
 export default function Main() {
   const { ready, authenticated, user } = usePrivy()
@@ -29,9 +30,14 @@ export default function Main() {
     }
   }, [ready, authenticated])
 
+  if (!authenticated) {
+    return <div>Loading...</div>
+  }
+
   return (
-    <div className="text-3xl text-black">
-      Coinaroid {user?.farcaster?.displayName}
+    <div>
+      <h1>Welcome to Coinaroid, {user?.farcaster?.displayName}!</h1>
+      <PhotoUploadForm />
     </div>
   )
 }
