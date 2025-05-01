@@ -2,6 +2,10 @@
 
 import { useState, useRef } from 'react'
 import { uploadToPinata } from '@/utils/pinata'
+import { useWriteContract } from 'wagmi'
+import { createCoin } from '@/lib/createCoin'
+import { useAccount } from 'wagmi'
+import { Address } from 'viem'
 
 export default function PhotoUploadForm() {
   const [title, setTitle] = useState('')
@@ -10,6 +14,8 @@ export default function PhotoUploadForm() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadResult, setUploadResult] = useState<{ ipfsHash: string; pinataUrl: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { writeContract, status } = useWriteContract()
+  const { address } = useAccount()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,15 +25,60 @@ export default function PhotoUploadForm() {
       return
     }
 
+    if (!address) {
+      alert('Please connect your wallet')
+      return
+    }
+
     try {
       setIsUploading(true)
       setUploadResult(null)
-      const result = await uploadToPinata(photo)
-      setUploadResult(result)
-      console.log('Uploaded to IPFS:', { ...result, title, caption })
+      
+      // Upload the image to IPFS
+      alert('Starting image upload to IPFS...')
+      const imageResult = await uploadToPinata(photo)
+      alert(`Image uploaded successfully! IPFS Hash: ${imageResult.ipfsHash}`)
+      console.log('Uploaded to IPFS:', { ...imageResult, title, caption })
+      
+      // Create metadata JSON
+      const metadata = {
+        name: title || 'Untitled Coin',
+        description: caption || 'A coin created from an image',
+        image: `ipfs://${imageResult.ipfsHash}`,
+        properties: {
+          category: 'social'
+        }
+      }
+      
+      // Convert metadata to File
+      const metadataFile = new File(
+        [JSON.stringify(metadata)],
+        'metadata.json',
+        { type: 'application/json' }
+      )
+      
+      // Upload metadata to IPFS
+      alert('Starting metadata upload to IPFS...')
+      const metadataResult = await uploadToPinata(metadataFile)
+      alert(`Metadata uploaded successfully! IPFS Hash: ${metadataResult.ipfsHash}`)
+      console.log('Uploaded metadata to IPFS:', metadataResult)
+      
+      // Create the coin with the metadata IPFS hash
+      alert('Starting coin creation...')
+      await createCoin({
+        address: address as Address,
+        name: title || 'Untitled Coin',
+        symbol: `Coinaroid_${imageResult.ipfsHash.substring(0, 4)}`,
+        uri: `ipfs://${metadataResult.ipfsHash}`,
+        writeContract,
+      })
+      alert('Coin creation transaction sent!')
+      
+      setUploadResult(imageResult)
+      console.log('Created coin with metadata:', { ...metadataResult, title, caption })
     } catch (error) {
-      console.error('Error uploading:', error)
-      alert('Error uploading image to IPFS')
+      console.error('Error:', error)
+      alert(`Error occurred: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setIsUploading(false)
     }
