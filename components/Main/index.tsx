@@ -6,6 +6,8 @@ import { useLoginToFrame } from '@privy-io/react-auth/farcaster'
 import { useEffect } from 'react'
 import PhotoUploadForm from '../PhotoUploadForm'
 import { useAccount } from 'wagmi'
+import { usePublicClient } from 'wagmi'
+import { withdrawRewards } from '@zoralabs/protocol-sdk'
 
 import { Address } from 'viem'
 import { useWriteContract } from 'wagmi'
@@ -42,8 +44,13 @@ export default function Main() {
       console.log('Connected', address)
     }
   }, [isConnected, address])
+  const publicClient = usePublicClient()!
 
   const { writeContract, status } = useWriteContract()
+  const {
+    writeContract: withdrawRewardsWriteContract,
+    status: withdrawRewardsStatus,
+  } = useWriteContract()
 
   if (!authenticated) {
     return <div>Loading...</div>
@@ -57,26 +64,57 @@ export default function Main() {
           <div>You&apos;re connected!</div>
           <div>Address: {address}</div>
 
-          <button
-            onClick={async () => {
-              await createCoin({
-                address: address as Address,
-                name: 'My Awesome Coin',
-                symbol: 'MAC',
-                // URI should point to an existing metadata JSON with the structure:
-                // {
-                //   "name": "My Awesome Coin",
-                //   "symbol": "MAC",
-                //   "description": "A coin that represents my awesome coin",
-                //   "image": "ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy"
-                // }
-                uri: 'ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy',
-                writeContract,
-              })
-            }}
-          >
-            {status === 'pending' ? 'Creating...' : 'Create Coin'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={async () => {
+                const { parameters } = await withdrawRewards({
+                  withdrawFor: address as Address,
+                  claimSecondaryRoyalties: false,
+                  account: address as Address,
+                  publicClient,
+                })
+
+                // simulate the transaction
+                const hash = withdrawRewardsWriteContract?.(parameters)
+
+                // execute the transaction
+                const receipt = await publicClient.waitForTransactionReceipt({
+                  hash: hash!,
+                })
+
+                if (receipt.status !== 'success') {
+                  throw new Error('transaction failed')
+                }
+              }}
+            >
+              {withdrawRewardsStatus === 'pending'
+                ? 'Withdrawing...'
+                : 'Withdraw'}
+            </button>
+
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={async () => {
+                await createCoin({
+                  address: address as Address,
+                  name: 'My Awesome Coin',
+                  symbol: 'MAC',
+                  // URI should point to an existing metadata JSON with the structure:
+                  // {
+                  //   "name": "My Awesome Coin",
+                  //   "symbol": "MAC",
+                  //   "description": "A coin that represents my awesome coin",
+                  //   "image": "ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy"
+                  // }
+                  uri: 'ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy',
+                  writeContract,
+                })
+              }}
+            >
+              {status === 'pending' ? 'Creating...' : 'Create Coin'}
+            </button>
+          </div>
         </div>
         <PhotoUploadForm />
       </div>
