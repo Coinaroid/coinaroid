@@ -5,6 +5,11 @@ import { usePrivy } from '@privy-io/react-auth'
 import { useLoginToFrame } from '@privy-io/react-auth/farcaster'
 import { useEffect } from 'react'
 import PhotoUploadForm from '../PhotoUploadForm'
+import { useAccount } from 'wagmi'
+
+import { Address } from 'viem'
+import { useWriteContract } from 'wagmi'
+import { createCoin } from '@/lib/createCoin'
 
 export default function Main() {
   const { ready, authenticated, user } = usePrivy()
@@ -30,14 +35,44 @@ export default function Main() {
     }
   }, [ready, authenticated])
 
+  const { isConnected, address } = useAccount()
+
+  useEffect(() => {
+    if (isConnected) {
+      console.log('Connected', address)
+    }
+  }, [isConnected, address])
+
+  const { writeContract, status } = useWriteContract()
+
   if (!authenticated) {
     return <div>Loading...</div>
   }
 
   return (
-    <div>
-      <h1>Welcome to Coinaroid, {user?.farcaster?.displayName}!</h1>
-      <PhotoUploadForm />
-    </div>
+    <>
+      <div>
+        <h1>Welcome to Coinaroid, {user?.farcaster?.displayName}!</h1>
+        <div>
+          <div>You&apos;re connected!</div>
+          <div>Address: {address}</div>
+
+          <button
+            onClick={async () => {
+              createCoin({
+                address: address as Address,
+                name: 'My Awesome Coin',
+                symbol: 'MAC',
+                uri: 'ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy',
+                writeContract,
+              })
+            }}
+          >
+            {status === 'pending' ? 'Creating...' : 'Create Coin'}
+          </button>
+        </div>
+        <PhotoUploadForm />
+      </div>
+    </>
   )
 }

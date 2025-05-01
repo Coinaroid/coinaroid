@@ -13,9 +13,14 @@
     "@mini_apps/utilities": "^0.0.3",
     "@privy-io/react-auth": "^2.12.0",
     "axios": "^1.9.0",
+    "@farcaster/frame-wagmi-connector": "^0.0.25",
+    "@tanstack/react-query": "^5.75.0",
+    "@zoralabs/coins-sdk": "^0.1.0",
     "next": "15.3.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "viem": "^2.28.1",
+    "wagmi": "^2.15.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
