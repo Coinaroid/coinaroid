@@ -1,6 +1,11 @@
-import FrameReady from "@/components/frameinit"
+import FrameReady from '@/components/frameinit'
 import Main from '@/components/Main'
 
 export default function Home() {
-  return <><Main /><FrameReady /></>
+  return (
+    <>
+      <Main />
+      <FrameReady />
+    </>
+  )
 }
