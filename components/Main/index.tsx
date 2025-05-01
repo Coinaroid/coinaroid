@@ -59,10 +59,17 @@ export default function Main() {
 
           <button
             onClick={async () => {
-              createCoin({
+              await createCoin({
                 address: address as Address,
                 name: 'My Awesome Coin',
                 symbol: 'MAC',
+                // URI should point to an existing metadata JSON with the structure:
+                // {
+                //   "name": "My Awesome Coin",
+                //   "symbol": "MAC",
+                //   "description": "A coin that represents my awesome coin",
+                //   "image": "ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy"
+                // }
                 uri: 'ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy',
                 writeContract,
               })
