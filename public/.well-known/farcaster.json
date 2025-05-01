@@ -1,0 +1,19 @@
+{
+    "accountAssociation": {
+    "header": "eyJmaWQiOjU4MTgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjQzNTE2NDA4RWU5NzZiMzQ1NzM2NzhmMkFBMDI5YjY5REU0RjAwIn0",
+    "payload": "eyJkb21haW4iOiJjb2luYXJvaWQudmVyY2VsLmFwcCJ9",
+    "signature": "MHhkZGNkMGE4YzJkMWU4ZmVjZmQwOTFiMDQ0Yzc3Zjk0ZWRhYTNjMTIzODVlOTQ2OWQ4MjA1NTcyOGZkOWM3Nzc3NzA2MjE5NDY1MGYzMDNiYzIwODcwN2M2OWEzMTJkODU2OGMxMjJlMzlhMjNmMDFlNjc2NTkxZDg5OWQ5ODZhNDFi"
+    },
+    "frame": {
+    "version": "1",
+    "name": "Example Frame",
+    "iconUrl": "https://coinaroid.vercel.app/icon.png",
+    "homeUrl": "https://coinaroid.vercel.app",
+    "imageUrl": "https://coinaroid.vercel.app/image.png",
+    "buttonTitle": "📸 Coin it",
+    "splashImageUrl": "https://coinaroid.vercel.app/splash.png",
+    "splashBackgroundColor": "#c42318",
+    "webhookUrl": "https://coinaroid.vercel.app/api/webhook"
+    }
+}
+    
