@@ -30,7 +30,7 @@ export default function Main() {
   }, [ready, authenticated])
 
   return (
-    <div className="text-3xl text-black w-full h-full bg-amber-400">
+    <div className="text-3xl text-black">
       Coinaroid {user?.farcaster?.displayName}
     </div>
   )
