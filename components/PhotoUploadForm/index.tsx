@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { uploadToPinata } from '@/utils/pinata'
+import { uploadToCloudinary } from '@/utils/cloudinary'
 import { useWriteContract } from 'wagmi'
 import { createCoin } from '@/lib/createCoin'
 import { useAccount } from 'wagmi'
@@ -12,7 +13,7 @@ export default function PhotoUploadForm() {
   const [caption, setCaption] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
-  const [uploadResult, setUploadResult] = useState<{ ipfsHash: string; pinataUrl: string } | null>(null)
+  const [uploadResult, setUploadResult] = useState<{ url: string; publicId: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { writeContract, status } = useWriteContract()
   const { address } = useAccount()
@@ -34,17 +35,18 @@ export default function PhotoUploadForm() {
       setIsUploading(true)
       setUploadResult(null)
       
-      // Upload the image to IPFS
-      alert('Starting image upload to IPFS...')
-      const imageResult = await uploadToPinata(photo)
-      alert(`Image uploaded successfully! IPFS Hash: ${imageResult.ipfsHash}`)
-      console.log('Uploaded to IPFS:', { ...imageResult, title, caption })
+      // Upload the image to Cloudinary
+      alert('Starting image upload to Cloudinary...')
+      const imageResult = await uploadToCloudinary(photo)
+      alert(`Image uploaded successfully! URL: ${imageResult.url}`)
+      console.log('Uploaded to Cloudinary:', { ...imageResult, title, caption })
       
       // Create metadata JSON
       const metadata = {
         name: title || 'Untitled Coin',
         description: caption || 'A coin created from an image',
-        image: `ipfs://${imageResult.ipfsHash}`,
+        symbol: `Coinaroid_${imageResult.publicId.substring(0, 4)}`,
+        image: imageResult.url,
         properties: {
           category: 'social'
         }
@@ -68,8 +70,8 @@ export default function PhotoUploadForm() {
       await createCoin({
         address: address as Address,
         name: title || 'Untitled Coin',
-        symbol: `Coinaroid_${imageResult.ipfsHash.substring(0, 4)}`,
-        uri: `ipfs://${metadataResult.ipfsHash}`,
+        symbol: `Coinaroid_${imageResult.publicId.substring(0, 4)}`,
+        uri: `https://teal-uptight-sloth-224.mypinata.cloud/ipfs/${metadataResult.ipfsHash}`,
         writeContract,
       })
       alert('Coin creation transaction sent!')
@@ -178,16 +180,9 @@ export default function PhotoUploadForm() {
           borderRadius: '4px'
         }}>
           <h3 style={{ marginBottom: '8px', fontWeight: 'bold' }}>Upload Success!</h3>
-          <p style={{ marginBottom: '4px' }}>IPFS Hash: {uploadResult.ipfsHash}</p>
+          <p style={{ marginBottom: '4px' }}>URL: {uploadResult.url}</p>
           <p style={{ wordBreak: 'break-all' }}>
-            URL: <a 
-              href={uploadResult.pinataUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ color: '#0070f3', textDecoration: 'underline' }}
-            >
-              {uploadResult.pinataUrl}
-            </a>
+            Public ID: {uploadResult.publicId}
           </p>
         </div>
       )}
