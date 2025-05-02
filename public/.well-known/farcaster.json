@@ -7,13 +7,12 @@
     "frame": {
     "version": "1",
     "name": "Example Frame",
-    "iconUrl": "https://coinaroid.vercel.app/icon.png",
-    "homeUrl": "https://coinaroid.vercel.app",
-    "imageUrl": "https://coinaroid.vercel.app/image.png",
+    "iconUrl": "https://coinaroid.xyz/icon.png",
+    "homeUrl": "https://coinaroid.xyz",
+    "imageUrl": "https://coinaroid.xyz/image.png",
     "buttonTitle": "📸 Coin it",
-    "splashImageUrl": "https://coinaroid.vercel.app/splash.png",
+    "splashImageUrl": "https://coinaroid.xyz/splash.png",
     "splashBackgroundColor": "#c42318",
-    "webhookUrl": "https://coinaroid.vercel.app/api/webhook"
+    "webhookUrl": "https://coinaroid.xyz/api/webhook"
     }
 }
-    
