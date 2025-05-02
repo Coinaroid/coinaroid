@@ -1,12 +1,12 @@
 {
-    "accountAssociation": {
-        "header": "eyJmaWQiOjU4MTgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjQzNTE2NDA4RWU5NzZiMzQ1NzM2NzhmMkFBMDI5YjY5REU0RjAwIn0",
-        "payload": "eyJkb21haW4iOiJjb2luYXJvaWQueHl6In0",
-        "signature": "MHhhYmU2YWNjZGY0ZWEzYjIyYmVmMGJlODRjZDMyYWVhNGNiOTFlMzBiODUyNTRlMTA5YWVkZmI2YWYyNjEwNTUzMGZjMGU1OTZhNGQzMmI0NDgwMGQ1NzFjMTIwNWM0NWU3NjNjM2Q1ZGQ3YTllOTgyODhkYjQzNjg0YmUwNjljMDFj"
-    },
-    "frame": {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjU4MTgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxMjQzNTE2NDA4RWU5NzZiMzQ1NzM2NzhmMkFBMDI5YjY5REU0RjAwIn0",
+    "payload": "eyJkb21haW4iOiJjb2luYXJvaWQueHl6In0",
+    "signature": "MHhhYmU2YWNjZGY0ZWEzYjIyYmVmMGJlODRjZDMyYWVhNGNiOTFlMzBiODUyNTRlMTA5YWVkZmI2YWYyNjEwNTUzMGZjMGU1OTZhNGQzMmI0NDgwMGQ1NzFjMTIwNWM0NWU3NjNjM2Q1ZGQ3YTllOTgyODhkYjQzNjg0YmUwNjljMDFj"
+  },
+  "frame": {
     "version": "1",
-    "name": "Example Frame",
+    "name": "Coinaroid",
     "iconUrl": "https://coinaroid.xyz/images/erica_splashImageUrl_200.png",
     "homeUrl": "https://coinaroid.xyz",
     "imageUrl": "https://coinaroid.xyz/images/erica_coinaroaid_iconURL_1024.png",
@@ -14,5 +14,5 @@
     "splashImageUrl": "https://coinaroid.xyz/images/erica_splashImageUrl_200.png",
     "splashBackgroundColor": "#c42318",
     "webhookUrl": "https://coinaroid.xyz/api/webhook"
-    }
+  }
 }
