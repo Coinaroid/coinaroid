@@ -11,7 +11,6 @@ import { withdrawRewards } from '@zoralabs/protocol-sdk'
 
 import { Address } from 'viem'
 import { useWriteContract } from 'wagmi'
-import { createCoin } from '@/lib/createCoin'
 
 export default function Main() {
   const { ready, authenticated, user } = usePrivy()
@@ -46,7 +45,6 @@ export default function Main() {
   }, [isConnected, address])
   const publicClient = usePublicClient()!
 
-  const { writeContract, status } = useWriteContract()
   const {
     writeContract: withdrawRewardsWriteContract,
     status: withdrawRewardsStatus,
@@ -91,28 +89,6 @@ export default function Main() {
               {withdrawRewardsStatus === 'pending'
                 ? 'Withdrawing...'
                 : 'Withdraw'}
-            </button>
-
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={async () => {
-                await createCoin({
-                  address: address as Address,
-                  name: 'My Awesome Coin',
-                  symbol: 'MAC',
-                  // URI should point to an existing metadata JSON with the structure:
-                  // {
-                  //   "name": "My Awesome Coin",
-                  //   "symbol": "MAC",
-                  //   "description": "A coin that represents my awesome coin",
-                  //   "image": "ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy"
-                  // }
-                  uri: 'ipfs://bafybeigoxzqzbnxsn35vq7lls3ljxdcwjafxvbvkivprsodzrptpiguysy',
-                  writeContract,
-                })
-              }}
-            >
-              {status === 'pending' ? 'Creating...' : 'Create Coin'}
             </button>
           </div>
         </div>

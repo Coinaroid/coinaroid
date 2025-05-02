@@ -139,7 +139,7 @@ export default function PhotoUploadForm() {
           >
             Choose Photo
           </button>
-          <button
+          {/* <button
             type="button"
             style={{
               padding: '8px 16px',
@@ -148,7 +148,7 @@ export default function PhotoUploadForm() {
             }}
           >
             Take Photo
-          </button>
+          </button> */}
           <input
             type="file"
             ref={fileInputRef}
