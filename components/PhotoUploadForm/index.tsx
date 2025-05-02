@@ -21,11 +21,11 @@ export default function PhotoUploadForm() {
     useWaitForTransactionReceipt({
       hash,
     })
-  const coinDeployment = getCoinCreateFromLogs(receipt!)
   const { address } = useAccount()
 
   useEffect(() => {
     if (isConfirmed) {
+      const coinDeployment = getCoinCreateFromLogs(receipt!)
       sdk.actions.composeCast({
         text: `${title}\n${caption}\n\nposted by Coinaroid`,
         embeds: [`https://zora.co/coin/base:${coinDeployment?.coin}`],
@@ -50,9 +50,9 @@ export default function PhotoUploadForm() {
       setIsUploading(true)
 
       // Upload the image to Cloudinary
-      alert('Starting image upload to Cloudinary...')
+      // alert('Starting image upload to Cloudinary...')
       const imageResult = await uploadToCloudinary(photo)
-      alert(`Image uploaded successfully! URL: ${imageResult.url}`)
+      // alert(`Image uploaded successfully! URL: ${imageResult.url}`)
       console.log('Uploaded to Cloudinary:', { ...imageResult, title, caption })
 
       // Create metadata JSON
@@ -74,15 +74,15 @@ export default function PhotoUploadForm() {
       )
 
       // Upload metadata to IPFS
-      alert('Starting metadata upload to IPFS...')
+      // alert('Starting metadata upload to IPFS...')
       const metadataResult = await uploadToPinata(metadataFile)
-      alert(
-        `Metadata uploaded successfully! IPFS Hash: ${metadataResult.ipfsHash}`,
-      )
+      // alert(
+      //   `Metadata uploaded successfully! IPFS Hash: ${metadataResult.ipfsHash}`,
+      // )
       console.log('Uploaded metadata to IPFS:', metadataResult)
 
       // Create the coin with the metadata IPFS hash
-      alert('Starting coin creation...')
+      // alert('Starting coin creation...')
       await createCoin({
         address: address as Address,
         name: title || 'Untitled Coin',
@@ -90,7 +90,7 @@ export default function PhotoUploadForm() {
         uri: `https://teal-uptight-sloth-224.mypinata.cloud/ipfs/${metadataResult.ipfsHash}`,
         writeContract,
       })
-      alert('Coin creation transaction sent!')
+      // alert('Coin creation transaction sent!')
 
       console.log('Created coin with metadata:', {
         ...metadataResult,
@@ -99,11 +99,11 @@ export default function PhotoUploadForm() {
       })
     } catch (error) {
       console.error('Error:', error)
-      alert(
-        `Error occurred: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      )
+      // alert(
+      //   `Error occurred: ${
+      //     error instanceof Error ? error.message : String(error)
+      //   }`,
+      // )
     } finally {
       setIsUploading(false)
     }
