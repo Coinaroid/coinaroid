@@ -17,21 +17,31 @@ export default function PhotoUploadForm() {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { writeContract, data: hash } = useWriteContract()
-  const { isSuccess: isConfirmed, data: receipt } =
-    useWaitForTransactionReceipt({
-      hash,
-    })
+  const {
+    isLoading,
+    isSuccess: isConfirmed,
+    data: receipt,
+  } = useWaitForTransactionReceipt({
+    hash,
+  })
   const { address } = useAccount()
 
   useEffect(() => {
-    if (isConfirmed) {
+    const cast = async () => {
+      setIsUploading(true)
       const coinDeployment = getCoinCreateFromLogs(receipt!)
-      sdk.actions.composeCast({
-        text: `${title}\n${caption}\n\nposted by Coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
-        embeds: [
-          `https://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
-        ],
-      })
+      setTimeout(() => {
+        sdk.actions.composeCast({
+          text: `${title}\n${caption}\n\nposted by Coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+          embeds: [
+            `https://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+          ],
+        })
+        setIsUploading(false)
+      }, 3000)
+    }
+    if (isConfirmed) {
+      cast()
     }
   }, [isConfirmed])
 
@@ -101,6 +111,7 @@ export default function PhotoUploadForm() {
       })
     } catch (error) {
       console.error('Error:', error)
+      setIsUploading(false)
       // alert(
       //   `Error occurred: ${
       //     error instanceof Error ? error.message : String(error)
@@ -188,6 +199,7 @@ export default function PhotoUploadForm() {
             border: '1px solid #ccc',
             borderRadius: '4px',
           }}
+          className="bg-white"
         />
       </div>
 
@@ -203,23 +215,24 @@ export default function PhotoUploadForm() {
             border: '1px solid #ccc',
             borderRadius: '4px',
           }}
+          className="bg-white"
         />
       </div>
 
       <button
         type="submit"
-        disabled={isUploading}
+        disabled={isUploading || isLoading}
         style={{
           width: '100%',
           padding: '12px',
-          backgroundColor: isUploading ? '#ccc' : '#0070f3',
+          backgroundColor: isUploading || isLoading ? '#ccc' : '#0070f3',
           color: 'white',
           border: 'none',
           borderRadius: '4px',
-          cursor: isUploading ? 'not-allowed' : 'pointer',
+          cursor: isUploading || isLoading ? 'not-allowed' : 'pointer',
         }}
       >
-        {isUploading ? 'Uploading...' : 'Create Content Coin'}
+        {isUploading || isLoading ? 'Uploading...' : 'Create Content Coin'}
       </button>
     </form>
   )
