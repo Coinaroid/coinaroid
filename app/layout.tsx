@@ -14,7 +14,7 @@ const frame = {
       name: 'Coinaroid',
       url: appUrl,
       splashImageUrl: `${appUrl}/images/erica_splashImageUrl_200.png`,
-      splashBackgroundColor: '#6CCCBD',
+      splashBackgroundColor: '#F1EDDA',
     },
   },
 }
