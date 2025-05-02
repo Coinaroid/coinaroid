@@ -7,11 +7,11 @@
     "frame": {
     "version": "1",
     "name": "Example Frame",
-    "iconUrl": "https://coinaroid.xyz/icon.png",
+    "iconUrl": "https://coinaroid.xyz/images/erica_splashImageUrl_200.png",
     "homeUrl": "https://coinaroid.xyz",
-    "imageUrl": "https://coinaroid.xyz/image.png",
+    "imageUrl": "https://coinaroid.xyz/images/erica_coinaroaid_iconURL_1024.png",
     "buttonTitle": "📸 Coin it",
-    "splashImageUrl": "https://coinaroid.xyz/splash.png",
+    "splashImageUrl": "https://coinaroid.xyz/images/erica_splashImageUrl_200.png",
     "splashBackgroundColor": "#c42318",
     "webhookUrl": "https://coinaroid.xyz/api/webhook"
     }
