@@ -1,15 +1,7 @@
 'use client'
 
-import { useMiniKit } from '@coinbase/onchainkit/minikit'
-import { useEffect } from 'react'
+import { FrameInit } from '@mini_apps/utilities'
 
 export default function FrameReady() {
-  const { setFrameReady, isFrameReady } = useMiniKit()
-  useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady()
-    }
-  }, [isFrameReady, setFrameReady])
-
-  return <></>
+  return <FrameInit />
 }
