@@ -3,11 +3,11 @@
 import frameSdk from '@farcaster/frame-sdk'
 import { usePrivy } from '@privy-io/react-auth'
 import { useLoginToFrame } from '@privy-io/react-auth/farcaster'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import PhotoUploadForm from '../PhotoUploadForm'
 import { useAccount } from 'wagmi'
 import { usePublicClient } from 'wagmi'
-import { withdrawRewards } from '@zoralabs/protocol-sdk'
+import { getRewardsBalances, withdrawRewards } from '@zoralabs/protocol-sdk'
 import { Loader } from 'lucide-react'
 
 import { Address } from 'viem'
@@ -16,6 +16,7 @@ import { useWriteContract } from 'wagmi'
 export default function Main() {
   const { ready, authenticated, user } = usePrivy()
   const { initLoginToFrame, loginToFrame } = useLoginToFrame()
+  const [hasRewards, setHasRewards] = useState(false)
 
   // Login to Mini App with Privy automatically
   useEffect(() => {
@@ -42,6 +43,15 @@ export default function Main() {
   useEffect(() => {
     if (isConnected) {
       console.log('Connected', address)
+
+      const checkRewards = async () => {
+        const rewardsBalance = await getRewardsBalances({
+          account: address!,
+          publicClient,
+        })
+        setHasRewards(rewardsBalance.protocolRewards > 0)
+      }
+      checkRewards()
     }
   }, [isConnected, address])
   const publicClient = usePublicClient()!
@@ -70,7 +80,7 @@ export default function Main() {
           />
           <h1>Welcome to Coinaroid, {user?.farcaster?.displayName}!</h1>
 
-          {address && (
+          {address && hasRewards && (
             <div>
               <div className="flex gap-2">
                 <button
@@ -99,7 +109,7 @@ export default function Main() {
                 >
                   {withdrawRewardsStatus === 'pending'
                     ? 'Claiming...'
-                    : 'Claim'}
+                    : 'Claim rewards'}
                 </button>
               </div>
             </div>
