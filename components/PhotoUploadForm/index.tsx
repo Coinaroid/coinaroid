@@ -27,8 +27,10 @@ export default function PhotoUploadForm() {
     if (isConfirmed) {
       const coinDeployment = getCoinCreateFromLogs(receipt!)
       sdk.actions.composeCast({
-        text: `${title}\n${caption}\n\nposted by Coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin}`,
-        embeds: [`https://zora.co/coin/base:${coinDeployment?.coin}`],
+        text: `${title}\n${caption}\n\nposted by Coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+        embeds: [
+          `https://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+        ],
       })
     }
   }, [isConfirmed])
