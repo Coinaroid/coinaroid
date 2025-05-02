@@ -32,7 +32,7 @@ export default function PhotoUploadForm() {
       const coinDeployment = getCoinCreateFromLogs(receipt!)
       setTimeout(() => {
         sdk.actions.composeCast({
-          text: `${title}\n${caption}\n\nposted by Coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+          text: `${title}\n${caption}\n\nposted by @coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
           embeds: [
             `https://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
           ],
