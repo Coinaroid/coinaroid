@@ -5,16 +5,22 @@ import { uploadToPinata } from '@/utils/pinata'
 import { uploadToCloudinary } from '@/utils/cloudinary'
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { createCoin } from '@/lib/createCoin'
+import { saveCoinToSupabase } from '@/lib/saveCoin'
 import { useAccount } from 'wagmi'
 import { Address } from 'viem'
 import sdk from '@farcaster/frame-sdk'
 import { getCoinCreateFromLogs } from '@zoralabs/coins-sdk'
+import { usePrivy } from '@privy-io/react-auth'
 
 export default function PhotoUploadForm() {
   const [title, setTitle] = useState('')
   const [caption, setCaption] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [fid, setFid] = useState<number>(0)
+  const [mintConfig, setMintConfig] = useState<any>({})
+  const [imageUrl, setImageUrl] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { writeContract, data: hash } = useWriteContract()
   const {
@@ -25,11 +31,38 @@ export default function PhotoUploadForm() {
     hash,
   })
   const { address } = useAccount()
+  const { user } = usePrivy()
+
+  useEffect(() => {
+    if (user?.farcaster?.fid) {
+      setFid(user.farcaster.fid)
+    }
+  }, [user])
 
   useEffect(() => {
     const cast = async () => {
-      setIsUploading(true)
+      //setIsUploading(true)
       const coinDeployment = getCoinCreateFromLogs(receipt!)
+      
+      try {
+        await saveCoinToSupabase({
+          fid: fid,
+          wallet_address: address!,
+          zora_mint_url: `https://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+          zora_token_id: coinDeployment?.coin?.toLowerCase() || '',
+          zora_contract_address: coinDeployment?.coin?.toLowerCase() || '',
+          name: title,
+          description: caption,
+          image_url: imageUrl,
+          transaction_hash: hash!,
+          mint_config: mintConfig,
+          raw_zora_response: coinDeployment
+        })
+      } catch (error: any) {
+        // Error occurred while saving to Supabase, log and continue
+        console.error('Error saving to Supabase:', error)
+      }
+
       setTimeout(() => {
         sdk.actions.composeCast({
           text: `${title}\n${caption}\n\nposted by @coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
@@ -43,11 +76,10 @@ export default function PhotoUploadForm() {
     if (isConfirmed) {
       cast()
     }
-  }, [isConfirmed])
+  }, [isConfirmed, fid, mintConfig, imageUrl])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!photo) {
       alert('Please select a photo')
       return
@@ -61,13 +93,13 @@ export default function PhotoUploadForm() {
     try {
       setIsUploading(true)
 
-      // Upload the image to Cloudinary
+      // Upload the image to Cloudinary b/c Zora requires a hosted image and didnt support Pinata/IPFS
       // alert('Starting image upload to Cloudinary...')
       const imageResult = await uploadToCloudinary(photo)
-      // alert(`Image uploaded successfully! URL: ${imageResult.url}`)
+      setImageUrl(imageResult.url)
       console.log('Uploaded to Cloudinary:', { ...imageResult, title, caption })
 
-      // Create metadata JSON
+      // Create metadata JSON for the coin to be hosted on Pinata/IPFS
       const metadata = {
         name: title || 'Untitled Coin',
         description: caption || 'A coin created from an image',
@@ -88,9 +120,7 @@ export default function PhotoUploadForm() {
       // Upload metadata to IPFS
       // alert('Starting metadata upload to IPFS...')
       const metadataResult = await uploadToPinata(metadataFile)
-      // alert(
-      //   `Metadata uploaded successfully! IPFS Hash: ${metadataResult.ipfsHash}`,
-      // )
+      setMintConfig(metadata)
       console.log('Uploaded metadata to IPFS:', metadataResult)
 
       // Create the coin with the metadata IPFS hash
@@ -111,14 +141,11 @@ export default function PhotoUploadForm() {
       })
     } catch (error) {
       console.error('Error:', error)
+      setError(error instanceof Error ? error.message : 'An error occurred while creating your coin. Transaction reverted.Please try again.')
       setIsUploading(false)
-      // alert(
-      //   `Error occurred: ${
-      //     error instanceof Error ? error.message : String(error)
-      //   }`,
-      // )
     } finally {
-      setIsUploading(false)
+      // Commening out to prevent the button from getting renabled for a brief moment, can be deleted later
+      //setIsUploading(false)
     }
   }
 
@@ -152,7 +179,7 @@ export default function PhotoUploadForm() {
           >
             Choose Photo
           </button>
-          
+
           <input
             type="file"
             ref={fileInputRef}
@@ -209,6 +236,21 @@ export default function PhotoUploadForm() {
           className="bg-white"
         />
       </div>
+
+      {error && (
+        <div
+          style={{
+            marginBottom: '20px',
+            padding: '12px',
+            backgroundColor: '#fee2e2',
+            border: '1px solid #ef4444',
+            borderRadius: '4px',
+            color: '#991b1b',
+          }}
+        >
+          {error}
+        </div>
+      )}
 
       <button
         type="submit"
