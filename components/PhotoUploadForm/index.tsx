@@ -12,6 +12,30 @@ import sdk from '@farcaster/frame-sdk'
 import { getCoinCreateFromLogs } from '@zoralabs/coins-sdk'
 import { usePrivy } from '@privy-io/react-auth'
 
+// Define the type for our metadata
+type MintConfig = {
+  name: string;
+  description: string;
+  symbol: string;
+  image: string;
+  properties: {
+    category: string;
+  };
+}
+
+type ZoraResponse = {
+  uri: string;
+  coin: `0x${string}`;
+  name: string;
+  pool: `0x${string}`;
+  caller: `0x${string}`;
+  symbol: string;
+  version: string;
+  currency: `0x${string}`;
+  payoutRecipient: `0x${string}`;
+  platformReferrer: `0x${string}`;
+}
+
 export default function PhotoUploadForm() {
   const [title, setTitle] = useState('')
   const [caption, setCaption] = useState('')
@@ -19,7 +43,15 @@ export default function PhotoUploadForm() {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [fid, setFid] = useState<number>(0)
-  const [mintConfig, setMintConfig] = useState<any>({})
+  const [mintConfig, setMintConfig] = useState<MintConfig>({
+    name: '',
+    description: '',
+    symbol: '',
+    image: '',
+    properties: {
+      category: 'social'
+    }
+  })
   const [imageUrl, setImageUrl] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { writeContract, data: hash } = useWriteContract()
@@ -41,16 +73,21 @@ export default function PhotoUploadForm() {
 
   useEffect(() => {
     const cast = async () => {
-      //setIsUploading(true)
       const coinDeployment = getCoinCreateFromLogs(receipt!)
+      
+      if (!coinDeployment) {
+        console.error('No coin deployment data found')
+        setIsUploading(false)
+        return
+      }
       
       try {
         await saveCoinToSupabase({
           fid: fid,
           wallet_address: address!,
-          zora_mint_url: `https://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
-          zora_token_id: coinDeployment?.coin?.toLowerCase() || '',
-          zora_contract_address: coinDeployment?.coin?.toLowerCase() || '',
+          zora_mint_url: `https://zora.co/coin/base:${coinDeployment.coin.toLowerCase()}`,
+          zora_token_id: coinDeployment.coin.toLowerCase(),
+          zora_contract_address: coinDeployment.coin.toLowerCase(),
           name: title,
           description: caption,
           image_url: imageUrl,
@@ -58,16 +95,16 @@ export default function PhotoUploadForm() {
           mint_config: mintConfig,
           raw_zora_response: coinDeployment
         })
-      } catch (error: any) {
+      } catch (error) {
         // Error occurred while saving to Supabase, log and continue
-        console.error('Error saving to Supabase:', error)
+        console.error('Error saving to Supabase:', error instanceof Error ? error.message : 'Unknown error occurred')
       }
 
       setTimeout(() => {
         sdk.actions.composeCast({
-          text: `${title}\n${caption}\n\nposted by @coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+          text: `${title}\n${caption}\n\nposted by @coinaroid\n\nhttps://zora.co/coin/base:${coinDeployment.coin.toLowerCase()}`,
           embeds: [
-            `https://zora.co/coin/base:${coinDeployment?.coin?.toLowerCase()}`,
+            `https://zora.co/coin/base:${coinDeployment.coin.toLowerCase()}`,
           ],
         })
         setIsUploading(false)

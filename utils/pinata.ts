@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 const pinataJWT = process.env.NEXT_PUBLIC_PINATA_JWT
 
@@ -51,13 +51,15 @@ export async function uploadToPinata(file: File) {
       ipfsHash: res.data.IpfsHash,
       pinataUrl: `https://gateway.pinata.cloud/ipfs/${res.data.IpfsHash}`,
     }
-  } catch (error: any) {
-    console.error('Error uploading to Pinata:', {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      message: error.message
-    })
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error('Error uploading to Pinata:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      })
+    }
     throw error
   }
 } 

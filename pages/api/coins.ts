@@ -26,8 +26,9 @@ export default async function handler(
     }
 
     return res.status(200).json(data)
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error saving coin:', error)
-    return res.status(500).json({ error: error.message })
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    return res.status(500).json({ error: errorMessage })
   }
 } 

@@ -1,4 +1,27 @@
 // Types for our coin data
+type MintConfig = {
+  name: string;
+  description: string;
+  symbol: string;
+  image: string;
+  properties: {
+    category: string;
+  };
+}
+
+type ZoraResponse = {
+  uri: string;
+  coin: `0x${string}`;
+  name: string;
+  pool: `0x${string}`;
+  caller: `0x${string}`;
+  symbol: string;
+  version: string;
+  currency: `0x${string}`;
+  payoutRecipient: `0x${string}`;
+  platformReferrer: `0x${string}`;
+}
+
 interface CoinData {
   fid: number
   wallet_address: string
@@ -9,8 +32,8 @@ interface CoinData {
   description: string | null
   image_url: string
   transaction_hash: string
-  mint_config: any
-  raw_zora_response: any
+  mint_config: MintConfig
+  raw_zora_response: ZoraResponse
 }
 
 export async function saveCoinToSupabase(data: CoinData) {
