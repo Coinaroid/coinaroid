@@ -23,18 +23,7 @@ type MintConfig = {
   };
 }
 
-type ZoraResponse = {
-  uri: string;
-  coin: `0x${string}`;
-  name: string;
-  pool: `0x${string}`;
-  caller: `0x${string}`;
-  symbol: string;
-  version: string;
-  currency: `0x${string}`;
-  payoutRecipient: `0x${string}`;
-  platformReferrer: `0x${string}`;
-}
+
 
 export default function PhotoUploadForm() {
   const [title, setTitle] = useState('')
